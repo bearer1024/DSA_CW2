@@ -1,0 +1,8 @@
+package CO3090.assignment2;
+
+
+public interface QueryEngineInterface extends java.rmi.Remote {
+
+    public Object executeQuery(Query t) throws java.rmi.RemoteException;
+
+}

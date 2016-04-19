@@ -1,0 +1,127 @@
+package CO3090.assignment2.client;
+
+import java.util.HashMap;
+import java.util.Vector;
+
+import CO3090.assignment2.*;
+
+
+
+public class SearchFolderQuery implements Query{
+	
+	String foldername;
+
+	public SearchFolderQuery(String foldername) {
+		super();
+		this.foldername = foldername;
+	}
+
+	
+	Vector<Folder> folders=new Vector<Folder>();;
+	
+	
+	@Override
+    public Object execute(Vector<Folder> folders){	
+		
+    	this.folders=folders;
+    	
+    	HashMap<String, String> ret=new HashMap<String, String>();
+    		
+    	Folder f= this.getFolderByName(foldername);
+    	
+    	ret.put("fullPath", getFullPath(f));
+    	
+    	StringBuffer sb=new StringBuffer();
+    	getSubDirectories(f, sb);	
+    	ret.put("subDirectories",sb.toString());
+    		
+    	return ret;
+    }
+	
+	
+	
+	private String getFullPath(Folder f){
+		
+		StringBuffer sb=new StringBuffer();;
+		
+		Folder current=f;
+		
+		boolean first=true;
+		
+		while(current!=null){			
+			if(first){
+				first=false;
+			}else{			
+				sb.insert(0,"/");
+			}
+			
+			sb.insert(0,current.getName());
+			current= this.getFolderByName( current.getParent());
+			
+		}
+		
+		sb.insert(0, "/");
+		
+		return sb.toString();
+		
+	}
+	
+	
+	private String getSubDirectories(Folder f, StringBuffer sb){
+		
+		if(f!=null){
+		sb.append(f.getName());
+		
+		if(this.getDirectSubfolder(f.getName()).size()!=0){
+			sb.append("{");
+		}
+		boolean first=true;
+		for(Folder sub: this.getDirectSubfolder(f.getName()) ){
+			if(first){
+				first=false;
+			}else{
+				sb.append(",");
+			}
+				this.getSubDirectories(sub, sb);
+		}
+		
+		if(this.getDirectSubfolder(f.getName()).size()!=0){
+			sb.append("}");
+		}
+		}
+		
+		return sb.toString();
+	}
+	
+	
+	private Folder getFolderByName(String folder){
+		
+		for(Folder fm: folders){
+			if(fm.getName().equals(folder)){
+				return fm;
+			}
+		}
+		
+		return null;
+		
+	}
+	
+	
+	private Vector<Folder> getDirectSubfolder(String folder){
+		
+		Vector<Folder> ret=new Vector<Folder>();
+		
+		for(Folder fm: folders){
+			if(fm.getParent().equals(folder)){
+				ret.add(fm);
+			}
+		}
+		return ret;
+	}
+	
+	
+
+    
+
+
+}

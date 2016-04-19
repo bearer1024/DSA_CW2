@@ -1,0 +1,31 @@
+package CO3090.assignment2.client;
+import CO3090.assignment2.*;
+
+import java.rmi.*;
+import java.util.HashMap;
+
+
+public class ComputeFolder {
+	
+    public static void main(String args[]) {
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new RMISecurityManager());
+        }
+        try {
+            String name = "rmi://" + args[0] + "/FolderSearch";
+            QueryEngineInterface comp = (QueryEngineInterface) Naming.lookup(name);
+            SearchFolderQuery task =new SearchFolderQuery("F");
+            
+            HashMap<String, String> map= (HashMap<String, String>)comp.executeQuery(task);
+                      
+            System.out.println("fullPath:"+map.get("fullPath"));
+            System.out.println("subDirectories:"+map.get("subDirectories"));
+            
+        
+        } catch (Exception e) {
+            System.err.println("exception: " + 
+                               e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}

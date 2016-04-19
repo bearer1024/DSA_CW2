@@ -1,0 +1,10 @@
+package CO3090.assignment2;
+
+import java.io.Serializable;
+import java.util.Vector;
+
+public interface Query extends Serializable {
+
+    public Object execute(Vector<Folder> folders);
+   
+}

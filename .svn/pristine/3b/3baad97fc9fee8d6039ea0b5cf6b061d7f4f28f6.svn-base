@@ -1,0 +1,1 @@
+java -cp ./bin/ -Djava.rmi.server.codebase=file:///home/hongyi/workspaceCO3090SVN/Coursework2-client/bin/ -Djava.rmi.server.useCodebaseOnly=false -Djava.security.policy=file:$HOME/Documents/policy.permission CO3090.assignment2.client.ComputeFolder 127.0.0.1
