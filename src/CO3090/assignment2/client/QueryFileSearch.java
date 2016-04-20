@@ -1,13 +1,9 @@
 package CO3090.assignment2.client;
 
-import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
-import java.util.Map.Entry;
+import java.util.*;
 
-import CO3090.assignment2.FileItem;
+import CO3090.assignment2.FileItemType;
+import CO3090.assignment2.Filesystem;
 import CO3090.assignment2.SearchCriteria;
 
 //Question 3.1
@@ -45,9 +41,45 @@ public class QueryFileSearch implements SearchCriteria {
     }
 
     @Override
-    public Object /*change to your own type*/
-         execute(Object /*change to your own arguments*/ obj) {
+    public Vector<String> execute(Vector<Filesystem> filesystems) {
+        Vector<String> result = new Vector<>();
 
-            return null;
+        Stack<String> paths = new Stack<>();
+
+        for (Filesystem filesystem : filesystems) {
+            paths.push(filesystem.getName() + "://");
+
+            visitNode(result, paths, filesystem.getRoot());
+
+            paths.pop();
+        }
+
+        return result;
+    }
+
+    private void visitNode(Vector<String> result, Stack<String> paths, Filesystem.Node node) {
+        String filename = node.getFile().getName();
+        FileItemType type = node.getFile().getFileType();
+        if (type == FileItemType.DIR) {
+            paths.push(filename + "/");
+            for (Filesystem.Node subNode : node.list()) {
+                visitNode(result, paths, subNode);
+            }
+            paths.pop();
+        } else if (type == FileItemType.FILE) {
+            if (filename.equals(keyword)) {
+                paths.push(filename);
+                result.add(foldPaths(paths));
+                paths.pop();
+            }
+        }
+    }
+
+    private String foldPaths(Stack<String> paths) {
+        StringBuilder sb = new StringBuilder();
+        for (String path : paths) {
+            sb.append(path);
+        }
+        return sb.toString();
     }
 }
