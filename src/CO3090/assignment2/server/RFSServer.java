@@ -17,14 +17,46 @@ import java.util.Vector;
 
 //Question (2.3)
 public class RFSServer extends UnicastRemoteObject implements RFSInterface {
-    final static String fileSystemPath="./filesystems/";
+    final static String fileSystemPath = "./filesystems/";
 
-    Vector<String> fsIndex;
+    Vector<Filesystem> filesystems;
 
     public RFSServer() throws RemoteException {
        super();
 
-       fsIndex = FileUtility.readDistributedFilesystemList();
+       Vector<String> fsIndex = FileUtility.readDistributedFilesystemList();
+
+       for (String name : fsIndex) {
+           Filesystem fs = new Filesystem(name, fileSystemPath + name);
+           fs.printFilesystem();
+       }
+    }
+
+    @Override
+    public HashMap<String, Vector<FileItem>> executeQuery(String path) throws RemoteException {
+        HashMap<String, Vector<FileItem>> result = new HashMap<>();
+
+        assert path.charAt(0) == '/';
+
+        String[] dirNames = path.split("/");
+
+        for (Filesystem fs : filesystems) {
+            Vector<FileItem> files = new Vector<>();
+
+            Filesystem.Entry entry = fs.getRoot();
+
+            for (String dirName : dirNames) {
+                entry = entry.getSubEntryByName(dirName);
+                if (entry == null) {
+                    break;
+                }
+            }
+
+            if (entry != null) {
+            }
+        }
+
+        return result;
     }
 
     public static void main(String[] args) throws Exception {
@@ -56,18 +88,6 @@ public class RFSServer extends UnicastRemoteObject implements RFSInterface {
             }
         }
     }
-
-    @Override
-    public HashMap<String, Vector<FileItem>> executeQuery(String path) throws RemoteException {
-        HashMap<String, Vector<FileItem>> result = new HashMap<>();
-
-        for (String filesystem : fsIndex) {
-            Filesystem fs = new Filesystem(fileSystemPath+filesystem);
-            fs.printFilesystem();
-        }
-
-        return result;
-    }
 }
 
 class Filesystem {
@@ -76,14 +96,31 @@ class Filesystem {
 
         FileItem file;
         Vector<Entry> dir = new Vector<>();
+
+        public Entry getSubEntryByName(String name) {
+            if (file.getFileType() == FileItemType.DIR) {
+                for (Entry entry : dir) {
+                    if (entry.file.getName().equals(name)) {
+                        return entry;
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 
+    String name;
     Entry root = new Entry();
 
-    public Filesystem(String path) {
-        for (FileItem f : FileUtility.readFS(path)){
+    public Filesystem(String name, String filepath) {
+        for (FileItem f : FileUtility.readFS(filepath)){
             addFile(f);
         }
+    }
+
+    public Entry getRoot() {
+        return root;
     }
 
     private void addFile(FileItem file) {

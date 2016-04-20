@@ -77,7 +77,7 @@ public class FileUtility {
                         }
                     }
 
-                    if(parent.equals("?")) {
+                    if (parent.equals("?")) {
                         parent = null;
                     }
 
