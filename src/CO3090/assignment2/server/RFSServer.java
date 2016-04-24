@@ -21,7 +21,7 @@ public class RFSServer extends UnicastRemoteObject implements RFSInterface {
        Vector<String> fsIndex = FileUtility.readDistributedFilesystemList();
 
        for (String name : fsIndex) {
-           Filesystem fs = new Filesystem(name.split("\\.")[0], fileSystemPath + name);
+           Filesystem fs = new Filesystem(name.split("\\.")[0], FileUtility.readFS(fileSystemPath + name));
 //           fs.printFilesystem();
            filesystems.add(fs);
        }

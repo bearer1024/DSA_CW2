@@ -1,7 +1,6 @@
 package CO3090.assignment2;
 
-import CO3090.assignment2.server.FileUtility;
-
+import java.io.File;
 import java.util.ArrayDeque;
 import java.util.Vector;
 
@@ -28,10 +27,10 @@ public class Filesystem {
     String name;
     Node root = new Node();
 
-    public Filesystem(String name, String filepath) {
+    public Filesystem(String name, Vector<FileItem> fileItems) {
         this.name = name;
 
-        for (FileItem f : FileUtility.readFS(filepath)){
+        for (FileItem f : fileItems){
             addFile(f);
         }
     }
